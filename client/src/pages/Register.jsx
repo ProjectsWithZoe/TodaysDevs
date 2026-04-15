@@ -20,14 +20,23 @@ export default function Register() {
     setError('')
 
     const name = email.split('@')[0]
-    const { error: err } = await authClient.signUp.email({ email, password, name })
+    const { error: signUpErr } = await authClient.signUp.email({ email, password, name })
 
-    if (err) {
-      setError(err.message ?? 'Registration failed')
+    if (signUpErr) {
+      setError(signUpErr.message ?? 'Registration failed')
       setLoading(false)
-    } else {
-      navigate('/dashboard', { replace: true })
+      return
     }
+
+    const { error: signInErr } = await authClient.signIn.email({ email, password })
+
+    if (signInErr) {
+      setError(signInErr.message ?? 'Account created but sign-in failed. Please sign in manually.')
+      setLoading(false)
+      return
+    }
+
+    navigate('/dashboard', { replace: true })
   }
 
   return (
