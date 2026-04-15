@@ -19,10 +19,32 @@ export async function buildApp(opts = {}) {
     logger: opts.logger ?? true
   })
 
+  const allowedOrigins = [
+    'http://localhost:5173',
+  'https://todaysdevs.com',
+  'https://www.todaysdevs.com',
+  'https://todaysdevs.co.uk',
+  'https://www.todaysdevs.co.uk'
+  ]
+
   await fastify.register(cors, {
-    origin:      process.env.CLIENT_ORIGIN ?? 'http://localhost:5173',
+    origin: (origin, cb) => {
+      if (!origin) return cb(null, true)
+
+      const cleanOrigin = origin.replace(/\/$/, '')
+
+      if (
+        allowedOrigins.includes(cleanOrigin) ||
+        cleanOrigin.endsWith('.vercel.app')
+      ) {
+        cb(null, true)
+      } else {
+        cb(new Error('Not allowed by CORS'), false)
+      }
+    },
     credentials: true,
   })
+
 
   await fastify.register(cookie, {
     secret: process.env.COOKIE_SECRET,
