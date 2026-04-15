@@ -6,7 +6,7 @@ export default function AuthLayout() {
       {/* Logo */}
       <div className="flex items-center gap-2 mb-8">
         <span className="text-2xl font-bold text-brand-600 leading-none">⟨/⟩</span>
-        <span className="text-xl font-bold text-slate-800 tracking-tight">DevPlatform</span>
+        <span className="text-xl font-bold text-slate-800 tracking-tight">TodaysDevs</span>
       </div>
 
       {/* Card */}
@@ -14,7 +14,7 @@ export default function AuthLayout() {
         <Outlet />
       </div>
 
-      <p className="mt-6 text-xs text-slate-400">© {new Date().getFullYear()} DevPlatform</p>
+      <p className="mt-6 text-xs text-slate-400">© {new Date().getFullYear()} TodaysDevs</p>
     </div>
   )
 }

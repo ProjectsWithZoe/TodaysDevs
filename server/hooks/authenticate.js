@@ -27,7 +27,7 @@ function resolvePublicIp(request) {
 async function geolocateIp(ip) {
   try {
     const res = await fetch(`https://ipapi.co/${ip}/json/`, {
-      headers: { 'User-Agent': 'DevPlatform/1.0' },
+      headers: { 'User-Agent': 'TodaysDevs/1.0' },
       signal:  AbortSignal.timeout(3000),
     })
     if (!res.ok) return null

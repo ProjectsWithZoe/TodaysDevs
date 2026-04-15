@@ -122,7 +122,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-lg font-bold text-indigo-600 leading-none tracking-tight">⟨/⟩</span>
-            <span className="text-sm font-bold text-slate-900 tracking-tight uppercase">DevPlatform</span>
+            <span className="text-sm font-bold text-slate-900 tracking-tight uppercase">TodaysDevs</span>
           </div>
           <div className="flex items-center gap-3">
             <Link
@@ -328,9 +328,9 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <span className="text-base font-bold text-indigo-500 leading-none">⟨/⟩</span>
-            <span className="text-xs font-bold text-slate-500 tracking-tight uppercase">DevPlatform</span>
+            <span className="text-xs font-bold text-slate-500 tracking-tight uppercase">TodaysDevs</span>
           </div>
-          <p className="text-xs text-slate-600">© {new Date().getFullYear()} DevPlatform. All rights reserved.</p>
+          <p className="text-xs text-slate-600">© {new Date().getFullYear()} TodaysDevs. All rights reserved.</p>
         </div>
       </footer>
 

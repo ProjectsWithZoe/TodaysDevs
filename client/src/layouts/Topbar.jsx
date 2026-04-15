@@ -14,7 +14,7 @@ export default function Topbar() {
 
   const title = [...matches]
     .reverse()
-    .find(m => m.handle?.title)?.handle?.title ?? 'DevPlatform'
+    .find(m => m.handle?.title)?.handle?.title ?? 'TodaysDevs'
 
   const displayName = user?.display_name || user?.email || ''
 

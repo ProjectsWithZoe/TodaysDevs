@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
 
-const APP_NAME = 'DevPlatform'
+const APP_NAME = 'TodaysDevs'
 
 /**
- * Sets document.title = "<title> — DevPlatform" for the lifetime of the component.
+ * Sets document.title = "<title> — TodaysDevs" for the lifetime of the component.
  * Restores the bare app name on unmount.
  */
 export function useTitleEffect(title) {

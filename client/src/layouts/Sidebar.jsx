@@ -46,7 +46,7 @@ export default function Sidebar() {
       <div className="px-5 py-5 border-b border-slate-800">
         <Link to="/dashboard" className="flex items-center gap-2 group">
           <span className="text-lg font-bold text-brand-400 group-hover:text-brand-300 transition-colors">⟨/⟩</span>
-          <span className="text-sm font-bold text-white tracking-tight">DevPlatform</span>
+          <span className="text-sm font-bold text-white tracking-tight">TodaysDevs</span>
         </Link>
       </div>
 
