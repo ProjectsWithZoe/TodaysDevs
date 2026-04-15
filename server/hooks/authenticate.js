@@ -108,9 +108,9 @@ export async function authenticate(request, reply) {
 
   const u = rows[0]
 
-  // ── Browser / device + last_seen — one write per request (fire-and-forget) ──
+  // ── Browser / device + last_seen — await so the route handler sees fresh values ──
   const { browser, device } = parseUserAgent(request.headers['user-agent'] || '')
-  db.query(
+  await db.query(
     'UPDATE users SET ua_browser = $1, ua_device = $2, last_seen_at = NOW() WHERE id = $3',
     [browser, device, u.id]
   ).catch(() => {})
