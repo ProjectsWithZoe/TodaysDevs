@@ -11,6 +11,7 @@ import matchmakingRoutes  from './routes/matchmaking/index.js'
 import submissionRoutes   from './routes/submissions/index.js'
 import leaderboardRoutes  from './routes/leaderboard/index.js'
 import lobbyRoutes        from './routes/lobby/index.js'
+import healthRoutes from './routes/health/index.js'
 import { errorHandler } from './errorHandler.js'
 
 export async function buildApp(opts = {}) {
@@ -34,6 +35,7 @@ export async function buildApp(opts = {}) {
 
   // Auth routes must be registered before protected routes
   await fastify.register(authRoutes)
+  await fastify.register(healthRoutes)
 
   await fastify.register(userRoutes,        { prefix: '/users' })
   await fastify.register(projectRoutes,     { prefix: '/projects' })
