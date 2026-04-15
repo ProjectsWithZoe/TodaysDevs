@@ -1,4 +1,6 @@
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth.js'
+import { PageSkeleton } from '../components/PageSkeleton.jsx'
 
 // ── Data ────────────────────────────────────────────────────────────────────
 
@@ -114,6 +116,11 @@ const FEATURES = [
 // ── Component ────────────────────────────────────────────────────────────────
 
 export default function Landing() {
+  const { user, isLoading } = useAuth()
+
+  if (isLoading) return <PageSkeleton />
+  if (user)      return <Navigate to="/dashboard" replace />
+
   return (
     <div style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }} className="bg-white text-slate-900 antialiased">
 
