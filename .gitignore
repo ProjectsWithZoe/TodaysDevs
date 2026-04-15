@@ -1,0 +1,12 @@
+*.env
+*.example
+*env*
+.opencode
+.github
+.codex
+.claude
+.agents
+/docs
+
+/openspec
+node_modules

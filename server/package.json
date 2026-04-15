@@ -1,0 +1,28 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "migrate": "node db/migrate.js",
+    "seed": "node db/seed.js",
+    "seed:projects": "node db/seeds/seed.js"
+  },
+  "dependencies": {
+    "@better-auth/infra": "^0.2.2",
+    "@fastify/cookie": "^9",
+    "@fastify/cors": "^9",
+    "@fastify/jwt": "^8",
+    "@fastify/rate-limit": "^9",
+    "bcrypt": "^5",
+    "better-auth": "^1.6.2",
+    "dotenv": "^16",
+    "fastify": "^4",
+    "fastify-plugin": "^4",
+    "mapbox-gl": "^3.21.0",
+    "nanoid": "^5",
+    "pg": "^8",
+    "resend": "^6.11.0"
+  }
+}
