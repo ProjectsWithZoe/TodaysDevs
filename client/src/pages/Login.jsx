@@ -18,7 +18,7 @@ export default function Login() {
     const { error: err } = await authClient.signIn.email({ email, password })
 
     if (err) {
-      setError(err.message ?? 'Sign-in failed')
+      setError('Sign-in failed. Please check your email and password and try again')
       setLoading(false)
     } else {
       navigate('/dashboard', { replace: true })
