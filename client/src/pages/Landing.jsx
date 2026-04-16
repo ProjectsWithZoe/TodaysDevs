@@ -60,12 +60,12 @@ const HOW_IT_WORKS = [
   {
     step: '01',
     title: 'Choose a project',
-    body: 'Browse real-world projects calibrated to your level — junior, mid, or senior. Every project maps to skills employers actively hire for.',
+    body: 'Browse real-world projects calibrated to your level. Every project maps to skills employers actively hire for.',
   },
   {
     step: '02',
     title: 'Pick your role and mode',
-    body: 'Work solo, pair with a developer at your level, or join a three-person team as frontend, backend, or fullstack. The platform handles matchmaking.',
+    body: 'Work solo, see what other friendly developers at your level are doing, or collaborate in teams to build fun projects as frontend, backend, or fullstack developers.',
   },
   {
     step: '03',
@@ -82,7 +82,7 @@ const FEATURES = [
       </svg>
     ),
     title: 'Real projects, real skills',
-    body: 'Not toy tutorials. Every project is a production-grade brief — the kind of thing you would find in an actual job interview or sprint planning session.',
+    body: 'Build everyday useful tools. Every project teaches you something — learn, grow, ask questions, most importantly - have fun coding !',
   },
   {
     icon: (
@@ -91,7 +91,7 @@ const FEATURES = [
       </svg>
     ),
     title: 'Collaborative by design',
-    body: 'Duo and team modes pair you with developers at the same level. You learn how to split work, review code, and ship together — the most in-demand skill in any job.',
+    body: 'See what other developers are working on. Ask questions, collaborate on projects. We have a Discord!',
   },
   {
     icon: (
@@ -100,7 +100,7 @@ const FEATURES = [
       </svg>
     ),
     title: 'Calibrated to your level',
-    body: 'Junior, mid, and senior tracks. The same project has different step-by-step guides depending on your level. You are never thrown in the deep end without instruction.',
+    body: 'Easy to difficult projects. All projects have different step-by-step guides depending on your level. You are never thrown in the deep end without instruction.',
   },
   {
     icon: (
@@ -109,7 +109,7 @@ const FEATURES = [
       </svg>
     ),
     title: 'Leaderboard and portfolio',
-    body: 'Every completed project is a portfolio entry. A public leaderboard tracks submissions so your progress is visible to the people reviewing your applications.',
+    body: 'Every completed project is a portfolio entry. A public portfolio, all yours. You can track your progress and be visible to people interested in your success.',
   },
 ]
 
