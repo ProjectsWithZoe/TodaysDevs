@@ -209,10 +209,6 @@ export default function ProjectDetail() {
       <Link to="/projects" className="btn-secondary btn-sm">← Back to projects</Link>
     </div>
   )
-
-  const functional    = (project.requirements ?? []).filter(r => r.type === 'functional')
-  const nonFunctional = (project.requirements ?? []).filter(r => r.type === 'non-functional')
-
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
@@ -225,9 +221,7 @@ export default function ProjectDetail() {
       {/* Header */}
       <div>
         <div className="flex flex-wrap items-center gap-1.5 mb-2">
-          <span className={`badge badge-${project.difficulty}`}>
-            {DIFFICULTY_LABELS[project.difficulty]}
-          </span>
+          
         </div>
         <h1 className="text-2xl font-bold text-slate-800">{project.title}</h1>
         {project.description && (
@@ -240,32 +234,7 @@ export default function ProjectDetail() {
       {error && <p className="field-error text-sm" role="alert">{error}</p>}
 
       {/* Body: main content + CTA sidebar */}
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Requirements + resources */}
-        <div className="flex-1 space-y-6">
-          <div className="card p-5 space-y-6">
-            <RequirementsList title="Functional requirements"     items={functional} />
-            <RequirementsList title="Non-functional requirements" items={nonFunctional} />
-          </div>
-
-          {project.steps?.length > 0 && (
-            <div className="card p-5">
-              <ProjectSteps steps={project.steps} />
-            </div>
-          )}
-
-          {project.responsibilities?.length > 0 && (
-            <div className="card p-5">
-              <RoleRequirements responsibilities={project.responsibilities} />
-            </div>
-          )}
-
-          {project.resources?.length > 0 && (
-            <div className="card p-5">
-              <ResourcesSection resources={project.resources} />
-            </div>
-          )}
-        </div>
+      <div className="flex flex-col lg:flex-row gap-6">        
 
         {/* CTA panel */}
         <aside className="lg:w-56 shrink-0">
