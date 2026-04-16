@@ -106,8 +106,8 @@ export default function TeamWorkspace() {
     </div>
   )
 
-  const functional    = project.requirements.filter(r => r.type === 'functional')
-  const nonFunctional = project.requirements.filter(r => r.type === 'non-functional')
+  const functional    = (project.requirements ?? []).filter(r => r.type === 'functional')
+  const nonFunctional = (project.requirements ?? []).filter(r => r.type === 'non-functional')
   const isSeeking     = room?.status === 'seeking_replacement'
 
   return (

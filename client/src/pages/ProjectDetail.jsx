@@ -210,8 +210,8 @@ export default function ProjectDetail() {
     </div>
   )
 
-  const functional    = project.requirements.filter(r => r.type === 'functional')
-  const nonFunctional = project.requirements.filter(r => r.type === 'non-functional')
+  const functional    = (project.requirements ?? []).filter(r => r.type === 'functional')
+  const nonFunctional = (project.requirements ?? []).filter(r => r.type === 'non-functional')
 
   return (
     <div className="space-y-6">

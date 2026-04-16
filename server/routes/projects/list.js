@@ -22,10 +22,10 @@ export async function listProjects(request, reply) {
 
   if (slugs.length > 0) {
     const { rows } = await db.query(
-      `SELECT project_id, COUNT(DISTINCT tm.user_id)::int AS active_count
+      `SELECT t.project_id::text, COUNT(DISTINCT tm.user_id)::int AS active_count
        FROM teams t
        JOIN team_members tm ON tm.team_id = t.id
-       WHERE t.status = 'active' AND t.project_id = ANY($1)
+       WHERE t.status = 'active' AND t.project_id::text = ANY($1)
        GROUP BY t.project_id`,
       [slugs]
     )
