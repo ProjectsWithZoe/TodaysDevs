@@ -3,9 +3,6 @@ import { useParams, useNavigate, Link }  from 'react-router-dom'
 import ReactMarkdown                     from 'react-markdown'
 import api                               from '../api/client.js'
 import { useTitleEffect }                from '../hooks/useTitleEffect.js'
-import { RoleRequirements }              from '../components/RoleRequirements.jsx'
-
-const DIFFICULTY_LABELS = { junior: 'Junior', mid: 'Mid', senior: 'Senior' }
 
 const ROLE_LABELS = { frontend: 'Frontend', backend: 'Backend', fullstack: 'Fullstack' }
 
@@ -261,13 +258,7 @@ export default function ProjectDetail() {
               </button>
             )}
 
-            <button
-              className="btn-secondary w-full justify-center"
-              onClick={handleDownload}
-              disabled={downloading}
-            >
-              {downloading ? 'Preparing…' : 'Download files'}
-            </button>
+            
           </div>
         </aside>
       </div>
