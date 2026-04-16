@@ -39,7 +39,7 @@ export default async function userRoutes(fastify) {
          u.last_seen_at,
          COALESCE(
            json_agg(
-             json_build_object('title', p.title, 'mode', t.mode)
+             json_build_object('title', t.project_title, 'mode', t.mode)
              ORDER BY t.created_at DESC
            ) FILTER (WHERE t.id IS NOT NULL AND t.status IN ('active','lobby')),
            '[]'
@@ -49,7 +49,6 @@ export default async function userRoutes(fastify) {
        LEFT JOIN team_members tm ON tm.user_id = u.id
        LEFT JOIN teams t
          ON t.id = tm.team_id AND t.status IN ('active','lobby')
-       LEFT JOIN projects p ON p.id = t.project_id
        WHERE u.last_seen_at >= CURRENT_DATE
        GROUP BY u.id, r.name
        ORDER BY u.last_seen_at DESC`
