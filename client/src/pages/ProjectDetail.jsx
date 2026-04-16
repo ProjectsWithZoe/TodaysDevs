@@ -135,11 +135,12 @@ function ResourcesSection({ resources }) {
 export default function ProjectDetail() {
   const { id }     = useParams()
   const navigate   = useNavigate()
-  const [project,    setProject]    = useState(null)
-  const [activeRoom, setActiveRoom] = useState(null)
-  const [loading,    setLoading]    = useState(true)
-  const [starting,   setStarting]   = useState(false)
-  const [error,      setError]      = useState(null)
+  const [project,     setProject]     = useState(null)
+  const [activeRoom,  setActiveRoom]  = useState(null)
+  const [loading,     setLoading]     = useState(true)
+  const [starting,    setStarting]    = useState(false)
+  const [downloading, setDownloading] = useState(false)
+  const [error,       setError]       = useState(null)
   useTitleEffect(project?.title ?? 'Project')
 
   useEffect(() => {
@@ -167,11 +168,32 @@ export default function ProjectDetail() {
     setStarting(true)
     setError(null)
     try {
-      const { data: room } = await api.post('/rooms', { project_id: id, mode: 'solo' })
+      const { data: room } = await api.post('/rooms', { project_id: id })
       navigate(`/rooms/${room.id}/workspace`, { replace: true })
     } catch (err) {
+      if (err.response?.status === 409 && err.response.data?.room_id) {
+        navigate(`/rooms/${err.response.data.room_id}/workspace`, { replace: true })
+        return
+      }
       setError(err.response?.data?.message ?? 'Failed to start project')
       setStarting(false)
+    }
+  }
+
+  async function handleDownload() {
+    setDownloading(true)
+    try {
+      const response = await api.get(`/projects/${id}/download`, { responseType: 'blob' })
+      const url = URL.createObjectURL(response.data)
+      const a   = document.createElement('a')
+      a.href     = url
+      a.download = `${id}.zip`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch {
+      // silently fail
+    } finally {
+      setDownloading(false)
     }
   }
 
@@ -257,7 +279,7 @@ export default function ProjectDetail() {
                   Continue project
                 </button>
                 <p className="text-xs text-slate-500 text-center">
-                  Active project ({activeRoom.status})
+                  You already have an active session
                 </p>
               </>
             ) : (
@@ -269,6 +291,14 @@ export default function ProjectDetail() {
                 {starting ? 'Starting…' : 'Start project'}
               </button>
             )}
+
+            <button
+              className="btn-secondary w-full justify-center"
+              onClick={handleDownload}
+              disabled={downloading}
+            >
+              {downloading ? 'Preparing…' : 'Download files'}
+            </button>
           </div>
         </aside>
       </div>

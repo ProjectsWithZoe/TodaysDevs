@@ -2,11 +2,10 @@
 
 export const createBodySchema = {
   type: 'object',
-  required: ['project_id', 'mode'],
+  required: ['project_id'],
   additionalProperties: false,
   properties: {
-    project_id: { type: 'string', format: 'uuid' },
-    mode:       { type: 'string', enum: ['solo', 'duo', 'team'] }
+    project_id: { type: 'string', minLength: 1 }
   }
 }
 
@@ -48,9 +47,7 @@ const memberShape = {
 const projectSummaryShape = {
   type: 'object',
   properties: {
-    title:      { type: 'string' },
-    difficulty: { type: 'string' },
-    type:       { type: 'string' }
+    title: { type: 'string' }
   }
 }
 

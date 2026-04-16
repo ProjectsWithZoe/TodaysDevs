@@ -180,9 +180,6 @@ export default function Dashboard() {
                     {room.project_title ?? 'Untitled'}
                   </p>
                   <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-                    <span className={`badge badge-${room.project?.difficulty}`}>
-                      {room.project?.difficulty}
-                    </span>
                     <span className={`badge badge-status-${room.status}`}>{room.status}</span>
                   </div>
                 </div>
@@ -220,9 +217,7 @@ export default function Dashboard() {
                     {room.project?.title ?? 'Untitled'}
                   </p>
                   <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-                    <span className={`badge badge-${room.project?.difficulty}`}>
-                      {room.project?.difficulty}
-                    </span>
+                    <span className="badge badge-status-completed">completed</span>
                   </div>
                   {room._submission && (
                     <div className="mt-1.5">

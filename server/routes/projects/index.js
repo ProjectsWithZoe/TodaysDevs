@@ -1,11 +1,12 @@
-import { authenticate } from '../../hooks/authenticate.js'
-import { listProjects } from './list.js'
-import { getProject }   from './detail.js'
+import { authenticate }     from '../../hooks/authenticate.js'
+import { listProjects }    from './list.js'
+import { getProject }      from './detail.js'
+import { downloadProject } from './download.js'
 import {
   listQuerySchema,
   listResponseSchema,
   detailParamsSchema,
-  detailResponseSchema
+  detailResponseSchema,
 } from './schema.js'
 
 export default async function projectsRoutes(fastify) {
@@ -14,16 +15,21 @@ export default async function projectsRoutes(fastify) {
     preHandler: authenticate,
     schema: {
       querystring: listQuerySchema,
-      response:    listResponseSchema
+      response:    listResponseSchema,
     }
   }, listProjects)
 
-  // GET /projects/:id
-  fastify.get('/:id', {
+  // GET /projects/:slug
+  fastify.get('/:slug', {
     preHandler: authenticate,
     schema: {
       params:   detailParamsSchema,
-      response: detailResponseSchema
+      response: detailResponseSchema,
     }
   }, getProject)
+
+  // GET /projects/:slug/download — returns a ZIP of the project folder
+  fastify.get('/:slug/download', {
+    preHandler: authenticate,
+  }, downloadProject)
 }

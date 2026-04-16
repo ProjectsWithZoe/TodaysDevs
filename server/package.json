@@ -20,6 +20,7 @@
     "dotenv": "^16",
     "fastify": "^4",
     "fastify-plugin": "^4",
+    "jszip": "^3.10.1",
     "mapbox-gl": "^3.21.0",
     "nanoid": "^5",
     "pg": "^8",
