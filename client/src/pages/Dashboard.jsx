@@ -94,7 +94,7 @@ export default function Dashboard() {
     setRoomList(rooms ?? [])
   }, [rooms])
 
-  const activeRooms    = useMemo(() => roomList.filter(r => r.status === 'active' || r.status === 'lobby'), [roomList])
+  const activeRooms    = useMemo(() => roomList.filter(r => r.status === 'active'), [roomList])
   const completedRooms = useMemo(() => roomList.filter(r => r.status === 'completed').slice(0, 3), [roomList])
 
   // Use the first active room's id as the dep — avoids firing on every render
@@ -164,12 +164,6 @@ export default function Dashboard() {
               </svg>
               Browse projects
             </Link>
-            <Link to="/projects?type=duo" className="btn-secondary">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              Find a partner
-            </Link>
           </div>
         </div>
       )}
@@ -189,13 +183,7 @@ export default function Dashboard() {
                     <span className={`badge badge-${room.project?.difficulty}`}>
                       {room.project?.difficulty}
                     </span>
-                    <span className="badge badge-type">{room.mode}</span>
                     <span className={`badge badge-status-${room.status}`}>{room.status}</span>
-                    {room.members?.length > 0 && (
-                      <span className="badge badge-type">
-                        {room.members.length} member{room.members.length !== 1 ? 's' : ''}
-                      </span>
-                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
@@ -208,9 +196,7 @@ export default function Dashboard() {
                     {removingRoomId === room.id ? 'Removing…' : 'Remove'}
                   </button>
                   <Link
-                    to={room.status === 'active'
-                      ? `/rooms/${room.id}/workspace`
-                      : `/rooms/${room.id}`}
+                    to={`/rooms/${room.id}/workspace`}
                     className="btn-primary btn-sm"
                   >
                     Continue
@@ -237,7 +223,6 @@ export default function Dashboard() {
                     <span className={`badge badge-${room.project?.difficulty}`}>
                       {room.project?.difficulty}
                     </span>
-                    <span className="badge badge-type">{room.mode}</span>
                   </div>
                   {room._submission && (
                     <div className="mt-1.5">

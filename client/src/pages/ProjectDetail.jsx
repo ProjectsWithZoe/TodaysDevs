@@ -4,10 +4,10 @@ import ReactMarkdown                     from 'react-markdown'
 import api                               from '../api/client.js'
 import { useTitleEffect }                from '../hooks/useTitleEffect.js'
 import { RoleRequirements }              from '../components/RoleRequirements.jsx'
-import { RoleBadge }                     from '../components/RoleBadge.jsx'
 
 const DIFFICULTY_LABELS = { junior: 'Junior', mid: 'Mid', senior: 'Senior' }
-const TYPE_LABELS        = { solo: 'Solo', duo: 'Duo', team: 'Team' }
+
+const ROLE_LABELS = { frontend: 'Frontend', backend: 'Backend', fullstack: 'Fullstack' }
 
 function RequirementsList({ title, items }) {
   if (!items || items.length === 0) return null
@@ -24,8 +24,6 @@ function RequirementsList({ title, items }) {
     </section>
   )
 }
-
-const ROLE_LABELS = { frontend: 'Frontend', backend: 'Backend', fullstack: 'Fullstack' }
 
 function ProjectSteps({ steps }) {
   if (!steps || steps.length === 0) return null
@@ -134,72 +132,13 @@ function ResourcesSection({ resources }) {
   )
 }
 
-function formatWait(seconds) {
-  if (seconds < 60) return `${seconds}s`
-  const m = Math.floor(seconds / 60)
-  return `${m}m`
-}
-
-function LobbySection({ projectId, mode }) {
-  const [entries,  setEntries]  = useState([])
-  const [loading,  setLoading]  = useState(true)
-
-  useEffect(() => {
-    api.get(`/lobby/${projectId}`, { params: { mode }, _silent: true })
-      .then(res  => setEntries(res.data))
-      .catch(err => {
-        console.error('[LobbySection] failed to fetch lobby:', err)
-        setEntries([])
-      })
-      .finally(() => setLoading(false))
-  }, [projectId, mode])
-
-  return (
-    <div className="card p-5 space-y-3">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-slate-700">Lobby</h3>
-        {!loading && entries.length > 0 && (
-          <span className="text-xs text-slate-400">{entries.length} waiting</span>
-        )}
-      </div>
-
-      {loading ? (
-        <div className="space-y-2">
-          {[0, 1].map(i => (
-            <div key={i} className="h-8 skeleton rounded" />
-          ))}
-        </div>
-      ) : entries.length === 0 ? (
-        <p className="text-xs text-slate-400 py-2">
-          No one waiting — be first to join
-        </p>
-      ) : (
-        <ul className="space-y-2">
-          {entries.map((e, i) => (
-            <li key={i} className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 min-w-0">
-                <RoleBadge role={e.role} />
-                <span className="text-xs text-slate-600 truncate">
-                  {e.display_name ?? 'Anonymous'}
-                </span>
-              </div>
-              <span className="text-[10px] text-slate-400 shrink-0">
-                {formatWait(e.wait_seconds)}
-              </span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  )
-}
-
 export default function ProjectDetail() {
   const { id }     = useParams()
   const navigate   = useNavigate()
   const [project,    setProject]    = useState(null)
   const [activeRoom, setActiveRoom] = useState(null)
   const [loading,    setLoading]    = useState(true)
+  const [starting,   setStarting]   = useState(false)
   const [error,      setError]      = useState(null)
   useTitleEffect(project?.title ?? 'Project')
 
@@ -224,13 +163,25 @@ export default function ProjectDetail() {
       .finally(() => setLoading(false))
   }, [id])
 
+  async function startProject() {
+    setStarting(true)
+    setError(null)
+    try {
+      const { data: room } = await api.post('/rooms', { project_id: id, mode: 'solo' })
+      navigate(`/rooms/${room.id}/workspace`, { replace: true })
+    } catch (err) {
+      setError(err.response?.data?.message ?? 'Failed to start project')
+      setStarting(false)
+    }
+  }
+
   if (loading) return (
     <div className="flex items-center justify-center py-20 text-slate-400 text-sm">
       Loading project…
     </div>
   )
 
-  if (error) return (
+  if (error && !project) return (
     <div className="flex flex-col items-center gap-3 py-20 text-center">
       <p className="text-sm text-slate-500">{error}</p>
       <Link to="/projects" className="btn-secondary btn-sm">← Back to projects</Link>
@@ -255,7 +206,6 @@ export default function ProjectDetail() {
           <span className={`badge badge-${project.difficulty}`}>
             {DIFFICULTY_LABELS[project.difficulty]}
           </span>
-          <span className="badge badge-type">{TYPE_LABELS[project.type]}</span>
         </div>
         <h1 className="text-2xl font-bold text-slate-800">{project.title}</h1>
         {project.description && (
@@ -264,6 +214,8 @@ export default function ProjectDetail() {
           </p>
         )}
       </div>
+
+      {error && <p className="field-error text-sm" role="alert">{error}</p>}
 
       {/* Body: main content + CTA sidebar */}
       <div className="flex flex-col lg:flex-row gap-6">
@@ -291,11 +243,6 @@ export default function ProjectDetail() {
               <ResourcesSection resources={project.resources} />
             </div>
           )}
-
-          {/* Public lobby — duo/team projects only */}
-          {(project.type === 'duo' || project.type === 'team') && (
-            <LobbySection projectId={id} mode={project.type} />
-          )}
         </div>
 
         {/* CTA panel */}
@@ -305,25 +252,21 @@ export default function ProjectDetail() {
               <>
                 <button
                   className="btn-primary w-full justify-center"
-                  onClick={() => {
-                    const dest = activeRoom.status === 'lobby'
-                      ? `/rooms/${activeRoom.id}`
-                      : `/rooms/${activeRoom.id}/workspace`
-                    navigate(dest)
-                  }}
+                  onClick={() => navigate(`/rooms/${activeRoom.id}/workspace`)}
                 >
                   Continue project
                 </button>
                 <p className="text-xs text-slate-500 text-center">
-                  Active {activeRoom.mode} room ({activeRoom.status})
+                  Active project ({activeRoom.status})
                 </p>
               </>
             ) : (
               <button
                 className="btn-primary w-full justify-center"
-                onClick={() => navigate(`/projects/${id}/mode`)}
+                onClick={startProject}
+                disabled={starting}
               >
-                Start project
+                {starting ? 'Starting…' : 'Start project'}
               </button>
             )}
           </div>

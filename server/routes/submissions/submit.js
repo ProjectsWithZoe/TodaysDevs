@@ -1,5 +1,3 @@
-import { MESSAGE_TYPES } from '../../ws/messageTypes.js'
-
 const ALLOWED_HOSTS = new Set(['github.com', 'gitlab.com', 'bitbucket.org'])
 
 export async function submitProject(request, reply) {
@@ -47,12 +45,6 @@ export async function submitProject(request, reply) {
     })
   }
 
-  // Get submitter display name for WS broadcast
-  const { rows: [submitter] } = await db.query(
-    'SELECT email FROM users WHERE id = $1',
-    [userId]
-  )
-
   // Transaction: insert submission + mark team completed atomically
   const client = await db.connect()
   let submission
@@ -86,17 +78,6 @@ export async function submitProject(request, reply) {
   } finally {
     client.release()
   }
-
-  // Broadcast to all connected room members (fire-and-forget)
-  request.server.chatManager?.broadcast(team_id, {
-    type:      MESSAGE_TYPES.PROJECT_SUBMITTED,
-    payload:   {
-      submittedBy: submitter?.email ?? 'A teammate',
-      submittedAt: submission.submitted_at
-    },
-    userId:    userId,
-    timestamp: new Date().toISOString()
-  })
 
   return reply.code(201).send(submission)
 }
