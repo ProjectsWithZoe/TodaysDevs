@@ -330,7 +330,7 @@ function ListView({ users, onSelect }) {
     return <div className="py-20 text-center text-sm text-slate-400">No developers found</div>
   }
   return (
-    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-200 border border-slate-200">
+    <div className="grid gap-px bg-slate-200 border border-slate-200">
       {users.map(u => (
         <ListCard key={u.id} user={u} onClick={onSelect} />
       ))}
