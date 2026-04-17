@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { Toaster } from 'react-hot-toast'
+import { Analytics } from '@vercel/analytics/react'
 import { AuthProvider }    from './context/AuthContext.jsx'
 import { ErrorBoundary }   from './components/ErrorBoundary.jsx'
 import App from './App.jsx'
@@ -12,6 +13,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <AuthProvider>
         {/* RouterProvider lives inside App — AuthProvider must wrap it */}
         <App />
+        <Analytics />
         <Toaster
           position="bottom-right"
           toastOptions={{

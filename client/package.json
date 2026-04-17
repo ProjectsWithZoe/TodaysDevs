@@ -8,6 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "axios": "^1",
     "better-auth": "^1.6.2",
     "mapbox-gl": "^3.21.0",
