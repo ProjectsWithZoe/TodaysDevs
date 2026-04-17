@@ -308,7 +308,7 @@ export default function Landing() {
             Start building today.
           </h2>
           <p className="text-indigo-200 text-base mb-10 max-w-lg mx-auto leading-relaxed">
-            Free to join. No subscription. Pick a project, pick a role, and ship something real.
+            Free to join. Pick a project, pick a role, and ship something real.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link
