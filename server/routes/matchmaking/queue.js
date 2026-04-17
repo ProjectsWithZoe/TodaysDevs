@@ -2,6 +2,7 @@ import { getExperienceLevel }          from '../../services/experienceLevel.js'
 import { findDuoMatch, assembleTeam }  from '../../services/matchmaker.js'
 import { generateJoinCode }            from '../../lib/joinCode.js'
 import { CAPACITY }                    from '../../lib/constants.js'
+import { getGithubProject }            from '../../services/github.js'
 
 // ── POST /matchmaking/queue ─────────────────────────────────────────────────
 export async function joinQueue(request, reply) {
@@ -11,12 +12,14 @@ export async function joinQueue(request, reply) {
   const role   = request.user.role   ?? null
   const db     = request.server.db
 
-  // Verify project exists
-  const { rows: [proj] } = await db.query(
-    'SELECT id FROM projects WHERE id = $1',
-    [project_id]
-  )
-  if (!proj) {
+  // Verify project exists on GitHub
+  let project
+  try {
+    project = await getGithubProject(project_id)
+  } catch {
+    return reply.code(502).send({ error: 'Bad Gateway', message: 'Could not reach GitHub' })
+  }
+  if (!project) {
     return reply.code(404).send({ error: 'Not Found', message: 'Project not found' })
   }
 
@@ -54,18 +57,12 @@ export async function joinQueue(request, reply) {
       [project_id, mode]
     )
 
-    // Read pairing history for this project
-    const { rows: pairingHistory } = await client.query(
-      `SELECT user_a, user_b, project_id FROM pairing_history WHERE project_id = $1`,
-      [project_id]
-    )
-
     let matchedUserIds = null
 
     if (mode === 'duo') {
       const candidate  = queueEntries.find(e => e.user_id === userId)
       const others     = queueEntries.filter(e => e.user_id !== userId)
-      const partner    = findDuoMatch(candidate, others, pairingHistory)
+      const partner    = findDuoMatch(candidate, others, [])
       if (partner) matchedUserIds = [userId, partner.user_id]
     } else {
       // team
@@ -77,10 +74,10 @@ export async function joinQueue(request, reply) {
       // Create the room
       const joinCode = generateJoinCode()
       const { rows: [room] } = await client.query(
-        `INSERT INTO teams (project_id, created_by, mode, status, join_code)
-         VALUES ($1, $2, $3, 'active', $4)
+        `INSERT INTO teams (project_id, project_title, created_by, mode, status, join_code)
+         VALUES ($1, $2, $3, $4, 'active', $5)
          RETURNING id`,
-        [project_id, userId, mode, joinCode]
+        [project_id, project.title, userId, mode, joinCode]
       )
 
       // Add all matched users as team members
@@ -89,18 +86,6 @@ export async function joinQueue(request, reply) {
           'INSERT INTO team_members (team_id, user_id) VALUES ($1, $2)',
           [room.id, uid]
         )
-      }
-
-      // Record pairing history (every unique pair)
-      for (let i = 0; i < matchedUserIds.length; i++) {
-        for (let j = i + 1; j < matchedUserIds.length; j++) {
-          const a = Math.min(matchedUserIds[i], matchedUserIds[j])
-          const b = Math.max(matchedUserIds[i], matchedUserIds[j])
-          await client.query(
-            `INSERT INTO pairing_history (user_a, user_b, project_id) VALUES ($1, $2, $3)`,
-            [a, b, project_id]
-          )
-        }
       }
 
       // Remove matched users from queue

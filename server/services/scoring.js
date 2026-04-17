@@ -66,20 +66,20 @@ export function applyStreakMultiplier(rawScore, streakDays) {
  * Recomputes the full score breakdown for a user from their submission history.
  * Does NOT apply streak multiplier — that is applied in updateScore().
  *
- * Tables accessed: submissions, team_members, teams, projects
+ * Tables accessed: submissions, team_members, teams
  *   + tasks (graceful fallback if missing)
  *   + messages (graceful fallback if missing)
  *
  * @returns {{ totalScore, soloScore, duoScore, teamScore, projectsCompleted }}
  */
 export async function computeUserScore(userId, db) {
-  // All accepted submissions this user is a member of
+  // All accepted submissions this user is a member of.
+  // Projects come from GitHub — no difficulty_weight in DB; default to 1.
   const { rows: submissions } = await db.query(
     `SELECT s.id AS submission_id, s.team_id, t.mode, t.project_id,
-            p.difficulty_weight
+            1 AS difficulty_weight
      FROM submissions s
-     JOIN teams t       ON t.id = s.team_id
-     JOIN projects p    ON p.id = t.project_id
+     JOIN teams t         ON t.id = s.team_id
      JOIN team_members tm ON tm.team_id = t.id AND tm.user_id = $1
      WHERE s.status = 'accepted'`,
     [userId]

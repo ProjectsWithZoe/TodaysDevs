@@ -6,7 +6,6 @@ import { useApiCall }        from '../hooks/useApiCall.js'
 import { useTitleEffect }    from '../hooks/useTitleEffect.js'
 import { useAppStore }       from '../store/useAppStore.js'
 import api                   from '../api/client.js'
-import { SubmissionStatus }  from '../components/SubmissionStatus.jsx'
 import { ScoreCard }         from '../components/ScoreCard.jsx'
 import { SkeletonCard }      from '../components/PageSkeleton.jsx'
 
@@ -94,8 +93,7 @@ export default function Dashboard() {
     setRoomList(rooms ?? [])
   }, [rooms])
 
-  const activeRooms    = useMemo(() => roomList.filter(r => r.status === 'active'), [roomList])
-  const completedRooms = useMemo(() => roomList.filter(r => r.status === 'completed').slice(0, 3), [roomList])
+  const activeRooms = useMemo(() => roomList.filter(r => r.status === 'active'), [roomList])
 
   // Use the first active room's id as the dep — avoids firing on every render
   const firstActiveRoomId = activeRooms[0]?.id ?? null
@@ -168,72 +166,67 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Active projects */}
-      {!loadingRooms && activeRooms.length > 0 && (
+      {/* Rooms table */}
+      {!loadingRooms && roomList.length > 0 && (
         <section>
-          <h3 className="text-sm font-semibold text-slate-700 mb-3">Active projects</h3>
-          <ul className="space-y-3">
-            {activeRooms.map(room => (
-              <li key={room.id} className="card p-4 flex items-center gap-4">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-800 truncate">
-                    {room.project_title ?? 'Untitled'}
-                  </p>
-                  <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-                    <span className={`badge badge-status-${room.status}`}>{room.status}</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <button
-                    type="button"
-                    className="btn-ghost btn-sm text-slate-500 hover:text-rose-600"
-                    onClick={() => setPendingRemoval(room)}
-                    disabled={removingRoomId === room.id}
-                  >
-                    {removingRoomId === room.id ? 'Removing…' : 'Remove'}
-                  </button>
-                  <Link
-                    to={`/rooms/${room.id}/workspace`}
-                    className="btn-primary btn-sm"
-                  >
-                    Continue
-                  </Link>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
-      {/* Recent completions */}
-      {!loadingRooms && completedRooms.length > 0 && (
-        <section>
-          <h3 className="text-sm font-semibold text-slate-700 mb-3">Recent completions</h3>
-          <ul className="space-y-2">
-            {completedRooms.map(room => (
-              <li key={room.id} className="card p-4 flex items-center gap-4 opacity-90">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-700 truncate">
-                    {room.project?.title ?? 'Untitled'}
-                  </p>
-                  <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-                    <span className="badge badge-status-completed">completed</span>
-                  </div>
-                  {room._submission && (
-                    <div className="mt-1.5">
-                      <SubmissionStatus submission={room._submission} />
-                    </div>
-                  )}
-                </div>
-                <Link
-                  to={`/rooms/${room.id}/workspace`}
-                  className="btn-ghost btn-sm shrink-0"
-                >
-                  Review
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <h3 className="text-sm font-semibold text-slate-700 mb-3">Your rooms</h3>
+          <div className="card overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-100 bg-slate-50">
+                    <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wide px-4 py-3">Project</th>
+                    <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wide px-4 py-3">Status</th>
+                    <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wide px-4 py-3 hidden sm:table-cell">Mode</th>
+                    <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wide px-4 py-3 hidden md:table-cell">Join code</th>
+                    <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wide px-4 py-3 hidden lg:table-cell">Created</th>
+                    <th className="px-4 py-3"></th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {roomList.map(room => (
+                    <tr key={room.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="px-4 py-3 font-medium text-slate-800 max-w-[180px] truncate">
+                        {room.project_title ?? 'Untitled'}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`badge badge-status-${room.status}`}>{room.status}</span>
+                      </td>
+                      <td className="px-4 py-3 text-slate-500 capitalize hidden sm:table-cell">{room.mode}</td>
+                      <td className="px-4 py-3 hidden md:table-cell">
+                        <code className="text-xs bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded font-mono">
+                          {room.join_code}
+                        </code>
+                      </td>
+                      <td className="px-4 py-3 text-slate-400 text-xs hidden lg:table-cell">
+                        {new Date(room.created_at).toLocaleDateString()}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          {room.status === 'active' && (
+                            <button
+                              type="button"
+                              className="btn-ghost btn-sm text-slate-400 hover:text-rose-600"
+                              onClick={() => setPendingRemoval(room)}
+                              disabled={removingRoomId === room.id}
+                            >
+                              {removingRoomId === room.id ? 'Removing…' : 'Remove'}
+                            </button>
+                          )}
+                          <Link
+                            to={`/rooms/${room.id}/workspace`}
+                            className={room.status === 'active' ? 'btn-primary btn-sm' : 'btn-ghost btn-sm'}
+                          >
+                            {room.status === 'active' ? 'Continue' : 'Review'}
+                          </Link>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </section>
       )}
     </div>
