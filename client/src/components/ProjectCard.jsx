@@ -13,10 +13,7 @@ export function ProjectCard({
       to={`/projects/${id}`}
       className="card p-5 flex flex-col gap-3 hover:shadow-md hover:border-slate-300 transition-all group"
     >
-      <div className="flex items-center gap-1.5 flex-wrap">
-        <span className={`badge badge-${difficulty}`}>
-          {DIFFICULTY_LABELS[difficulty]}
-        </span>
+      <div className="">
 
         {peopleCount > 0 && (
           <span className="flex items-center gap-1 ml-auto">
