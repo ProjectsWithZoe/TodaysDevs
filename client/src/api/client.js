@@ -13,8 +13,10 @@ api.interceptors.response.use(
   error => {
     const silent  = error.config?._silent
     const message = error.response?.data?.message ?? error.message ?? 'Something went wrong'
-    console.error('[api]', error.config?.method?.toUpperCase(), error.config?.url, error.response?.status ?? 'network', message)
-    if (!silent) toast.error(message)
+    if (!silent) {
+      console.error('[api]', error.config?.method?.toUpperCase(), error.config?.url, error.response?.status ?? 'network', message)
+      toast.error(message)
+    }
     return Promise.reject(error)
   }
 )
