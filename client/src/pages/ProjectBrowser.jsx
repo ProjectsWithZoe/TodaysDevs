@@ -140,7 +140,7 @@ function PythonProjectsTab() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {projects.map(p => <ProjectCard key={p.id} id={p.id} title={p.title} description={p.description} repo={p.repo} />)}
+          {projects.map(p => <ProjectCard key={p.id} id={p.id} title={p.title} description={p.description} active_count={p.active_count} repo={p.repo} />)}
         </div>
       )}
     </>
