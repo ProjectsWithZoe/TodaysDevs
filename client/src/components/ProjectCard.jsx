@@ -1,20 +1,15 @@
 import { Link } from 'react-router-dom'
 
-const DIFFICULTY_LABELS = { junior: 'Junior', mid: 'Mid', senior: 'Senior' }
-
 export function ProjectCard({
-  id, title, description, difficulty, responsibilities_count,
-  active_count,
+  id, title, description, responsibilities_count,
+  active_count, repo,
 }) {
   const peopleCount = active_count ?? 0
+  const className = "card p-5 flex flex-col gap-3 hover:shadow-md hover:border-slate-300 transition-all group"
 
-  return (
-    <Link
-      to={`/projects/${id}`}
-      className="card p-5 flex flex-col gap-3 hover:shadow-md hover:border-slate-300 transition-all group"
-    >
-      <div className="">
-
+  const content = (
+    <>
+      <div>
         {peopleCount > 0 && (
           <span className="flex items-center gap-1 ml-auto">
             <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
@@ -44,6 +39,12 @@ export function ProjectCard({
           {responsibilities_count} task{responsibilities_count !== 1 ? 's' : ''} for your role
         </p>
       )}
+    </>
+  )
+
+  return (
+    <Link to={`/projects/${id}`} state={repo ? { repo } : undefined} className={className}>
+      {content}
     </Link>
   )
 }

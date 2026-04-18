@@ -7,6 +7,7 @@ import {
   listQuerySchema,
   listResponseSchema,
   detailParamsSchema,
+  detailQuerySchema,
   detailResponseSchema,
 } from './schema.js'
 
@@ -29,8 +30,9 @@ export default async function projectsRoutes(fastify) {
   fastify.get('/:slug', {
     preHandler: authenticate,
     schema: {
-      params:   detailParamsSchema,
-      response: detailResponseSchema,
+      params:      detailParamsSchema,
+      querystring: detailQuerySchema,
+      response:    detailResponseSchema,
     }
   }, getProject)
 

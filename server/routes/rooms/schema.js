@@ -5,7 +5,8 @@ export const createBodySchema = {
   required: ['project_id'],
   additionalProperties: false,
   properties: {
-    project_id: { type: 'string', minLength: 1 }
+    project_id: { type: 'string', minLength: 1 },
+    repo:       { type: 'string' },
   }
 }
 

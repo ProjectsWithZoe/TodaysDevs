@@ -1,11 +1,13 @@
-import { useState, useEffect }           from 'react'
-import { useParams, useNavigate, Link }  from 'react-router-dom'
+import { useState, useEffect }                      from 'react'
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom'
 import api                               from '../api/client.js'
 import { useTitleEffect }                from '../hooks/useTitleEffect.js'
 
 export default function ProjectDetail() {
   const { id }     = useParams()
   const navigate   = useNavigate()
+  const { state }  = useLocation()
+  const repo       = state?.repo ?? null
   const [project,     setProject]     = useState(null)
   const [activeRoom,  setActiveRoom]  = useState(null)
   const [loading,     setLoading]     = useState(true)
@@ -17,7 +19,7 @@ export default function ProjectDetail() {
   useEffect(() => {
     setLoading(true)
     Promise.all([
-      api.get(`/projects/${id}`),
+      api.get(`/projects/${id}`, { params: repo ? { repo } : {} }),
       api.get('/rooms/my')
     ])
       .then(([projectRes, roomsRes]) => {
@@ -33,13 +35,13 @@ export default function ProjectDetail() {
           : (err.response?.data?.message ?? 'Failed to load project'))
       })
       .finally(() => setLoading(false))
-  }, [id])
+  }, [id, repo])
 
   async function startProject() {
     setStarting(true)
     setError(null)
     try {
-      const { data: room } = await api.post('/rooms', { project_id: id })
+      const { data: room } = await api.post('/rooms', { project_id: id, ...(repo && { repo }) })
       navigate(`/rooms/${room.id}/workspace`, { replace: true })
     } catch (err) {
       if (err.response?.status === 409 && err.response.data?.room_id) {
@@ -54,7 +56,10 @@ export default function ProjectDetail() {
   async function handleDownload() {
     setDownloading(true)
     try {
-      const response = await api.get(`/projects/${id}/download`, { responseType: 'blob' })
+      const response = await api.get(`/projects/${id}/download`, {
+        responseType: 'blob',
+        params: repo ? { repo } : {},
+      })
       const url = URL.createObjectURL(response.data)
       const a   = document.createElement('a')
       a.href     = url

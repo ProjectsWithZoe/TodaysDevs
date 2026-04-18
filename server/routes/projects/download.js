@@ -8,11 +8,12 @@ import { getProjectFileTree, getBlobBytes } from '../../services/github.js'
  */
 export async function downloadProject(request, reply) {
   const { slug } = request.params
+  const { repo = 'html-css-js' } = request.query
 
   // 1. Get the file list for this project folder
   let files
   try {
-    files = await getProjectFileTree(slug)
+    files = await getProjectFileTree(slug, repo)
   } catch (err) {
     request.log.error(err, 'Failed to fetch project file tree')
     return reply.code(502).send({ error: 'Bad Gateway', message: 'Could not reach GitHub' })
@@ -28,7 +29,7 @@ export async function downloadProject(request, reply) {
   try {
     await Promise.all(
       files.map(async ({ path, sha }) => {
-        const bytes = await getBlobBytes(sha)
+        const bytes = await getBlobBytes(sha, repo)
         zip.file(path, bytes)
       })
     )

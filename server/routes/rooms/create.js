@@ -3,14 +3,14 @@ import { getGithubProject }  from '../../services/github.js'
 import { fetchRoom }         from './detail.js'
 
 export async function createRoom(request, reply) {
-  const { project_id } = request.body   // GitHub folder slug
+  const { project_id, repo } = request.body   // GitHub folder slug + optional repo
   const userId = request.user.sub
   const db = request.server.db
 
   // Verify the project exists on GitHub and get its title
   let project
   try {
-    project = await getGithubProject(project_id)
+    project = await getGithubProject(project_id, repo || undefined)
   } catch {
     return reply.code(502).send({ error: 'Bad Gateway', message: 'Could not reach GitHub' })
   }

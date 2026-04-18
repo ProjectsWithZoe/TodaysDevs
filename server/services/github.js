@@ -72,27 +72,67 @@ export async function listGithubProjects() {
 }
 
 /**
- * Fetch metadata for a single project folder.
- * Returns { slug, title, description } or null if not found.
+ * Fetch metadata for a single project folder from a specific repo.
+ * Returns { slug, title, description, html_url } or null if not found.
  */
-export async function getGithubProject(slug) {
-  const cacheKey = `projects:${slug}`
+async function getGithubProjectFromRepo(slug, repo) {
+  const token = process.env.GITHUB_TOKEN
+  if (!token) throw new Error('GITHUB_TOKEN env var is not set')
+
+  const repoBase = `https://api.github.com/repos/${OWNER}/${repo}`
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    Accept:        'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28',
+  }
+
+  // Check the folder exists first
+  const dirRes = await fetch(`${repoBase}/contents/${encodeURIComponent(slug)}`, { headers })
+  if (dirRes.status === 404) return null
+  if (!dirRes.ok) throw new Error(`GitHub API error: ${dirRes.status}`)
+
+  const dirData = await dirRes.json()
+  const html_url = Array.isArray(dirData)
+    ? `https://github.com/${OWNER}/${repo}/tree/main/${slug}`
+    : dirData.html_url
+
+  // Try project.json for richer metadata
+  const pjRes = await fetch(`${repoBase}/contents/${encodeURIComponent(slug)}/project.json`, { headers })
+  if (pjRes.ok) {
+    const pjData = await pjRes.json()
+    const meta = JSON.parse(Buffer.from(pjData.content, 'base64').toString('utf8'))
+    return { slug, title: meta.title ?? slug, description: meta.description ?? null, html_url }
+  }
+
+  return { slug, title: slug, description: null, html_url }
+}
+
+/**
+ * Fetch metadata for a single project folder.
+ * If repo is provided, looks only there. Otherwise tries html-css-js then python-projects.
+ * Returns { slug, title, description, html_url } or null if not found.
+ */
+export async function getGithubProject(slug, repo) {
+  const cacheKey = `projects:${repo ?? 'any'}:${slug}`
   const cached = getCached(cacheKey)
   if (cached) return cached
 
-  const pjRes = await githubFetch(`/contents/${encodeURIComponent(slug)}/project.json`)
-  if (pjRes.status === 404) return null
-  if (!pjRes.ok) throw new Error(`GitHub API error: ${pjRes.status}`)
-
-  const pjData = await pjRes.json()
-  const meta   = JSON.parse(Buffer.from(pjData.content, 'base64').toString('utf8'))
-  const project = {
-    slug,
-    title:       meta.title       ?? slug,
-    description: meta.description ?? null,
+  let project
+  if (repo) {
+    project = await getGithubProjectFromRepo(slug, repo)
+  } else {
+    const resolvedRepos = ['html-css-js', 'python-projects']
+    for (const r of resolvedRepos) {
+      project = await getGithubProjectFromRepo(slug, r)
+      if (project) {
+        // Also cache under the specific repo key so direct lookups hit cache
+        setCached(`projects:${r}:${slug}`, project)
+        break
+      }
+    }
   }
 
-  setCached(cacheKey, project)
+  if (project) setCached(cacheKey, project)
   return project
 }
 
@@ -101,13 +141,22 @@ export async function getGithubProject(slug) {
  * Returns an array of { path (relative), sha }.
  * Not cached — only called on download requests.
  */
-export async function getProjectFileTree(slug) {
-  const treeRes = await githubFetch('/git/trees/main?recursive=1')
+export async function getProjectFileTree(slug, repo = 'html-css-js') {
+  const token = process.env.GITHUB_TOKEN
+  if (!token) throw new Error('GITHUB_TOKEN env var is not set')
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    Accept:        'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28',
+  }
+  const treeRes = await fetch(
+    `https://api.github.com/repos/${OWNER}/${repo}/git/trees/main?recursive=1`,
+    { headers }
+  )
   if (!treeRes.ok) throw new Error(`GitHub tree API error: ${treeRes.status}`)
 
   const { tree, truncated } = await treeRes.json()
   if (truncated) {
-    // Extremely unlikely for a small project repo
     throw new Error('Repository tree was truncated by GitHub — too many files')
   }
 
@@ -176,8 +225,19 @@ export async function listGithubProjectsFromRepo(repo) {
 /**
  * Fetch the raw bytes for a single git blob by SHA.
  */
-export async function getBlobBytes(sha) {
-  const res = await githubFetch(`/git/blobs/${sha}`)
+export async function getBlobBytes(sha, repo = 'html-css-js') {
+  const token = process.env.GITHUB_TOKEN
+  if (!token) throw new Error('GITHUB_TOKEN env var is not set')
+  const res = await fetch(
+    `https://api.github.com/repos/${OWNER}/${repo}/git/blobs/${sha}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept:        'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+      }
+    }
+  )
   if (!res.ok) throw new Error(`GitHub blob API error: ${res.status}`)
   const { content, encoding } = await res.json()
   if (encoding !== 'base64') throw new Error(`Unexpected blob encoding: ${encoding}`)

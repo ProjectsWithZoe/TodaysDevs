@@ -18,6 +18,7 @@ export async function listPythonProjects(request, reply) {
     title:       p.title,
     description: p.description,
     html_url:    p.html_url,
+    repo:        'python-projects',
   }))
 
   return reply.send({ data, total: data.length })

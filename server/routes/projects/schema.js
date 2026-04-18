@@ -30,6 +30,14 @@ export const listResponseSchema = {
 
 // ── GET /projects/:slug ───────────────────────────────────────────────────────
 
+export const detailQuerySchema = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    repo: { type: 'string' }
+  }
+}
+
 export const detailParamsSchema = {
   type: 'object',
   required: ['slug'],

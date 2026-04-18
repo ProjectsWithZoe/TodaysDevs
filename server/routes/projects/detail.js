@@ -6,10 +6,11 @@ import { getGithubProject } from '../../services/github.js'
  */
 export async function getProject(request, reply) {
   const { slug } = request.params
+  const { repo }  = request.query
   const db = request.server.db
 
   // 1. Fetch from GitHub (cached)
-  const project = await getGithubProject(slug)
+  const project = await getGithubProject(slug, repo || undefined)
   if (!project) {
     return reply.code(404).send({ error: 'Not Found', message: 'Project not found' })
   }
