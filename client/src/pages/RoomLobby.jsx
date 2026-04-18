@@ -4,7 +4,6 @@ import api                               from '../api/client.js'
 import { useAuth }                       from '../hooks/useAuth.js'
 import { useTitleEffect }                from '../hooks/useTitleEffect.js'
 import { MemberList }                    from '../components/MemberList.jsx'
-import { JoinCodeDisplay }               from '../components/JoinCodeDisplay.jsx'
 import { MIN_TO_START }                  from '../lib/constants.js'
 
 const POLL_INTERVAL = 3000
@@ -18,9 +17,6 @@ export default function RoomLobby() {
   const [loading,  setLoading]  = useState(true)
   const [starting, setStarting] = useState(false)
   const [error,    setError]    = useState(null)
-  const [codeInput, setCodeInput] = useState('')
-  const [codeError, setCodeError] = useState(null)
-  const [joining,   setJoining]   = useState(false)
   useTitleEffect(room ? `Lobby — ${room.project?.title}` : 'Lobby')
 
   useEffect(() => {
@@ -67,19 +63,6 @@ export default function RoomLobby() {
     }
   }
 
-  async function handleJoinByCode(e) {
-    e.preventDefault()
-    setJoining(true)
-    setCodeError(null)
-    try {
-      const { data } = await api.post('/rooms/join-by-code', { join_code: codeInput })
-      navigate(`/rooms/${data.id}`)
-    } catch (err) {
-      setCodeError(err.response?.data?.message ?? 'Invalid code')
-    } finally {
-      setJoining(false)
-    }
-  }
 
   if (loading) return (
     <div className="flex items-center justify-center py-20 text-slate-400 text-sm">Loading room…</div>
@@ -92,11 +75,10 @@ export default function RoomLobby() {
     </div>
   )
 
-  const isCreator   = room.created_by === user?.id
-  const min         = MIN_TO_START[room.mode]
-  const canStart    = isCreator && room.members.length >= min
-  const capacity    = room.mode === 'team' ? 6 : room.mode === 'duo' ? 2 : 1
-  const showCode    = room.mode !== 'solo'
+  const isCreator = room.created_by === user?.id
+  const min       = MIN_TO_START[room.mode]
+  const canStart  = isCreator && room.members.length >= min
+  const capacity  = room.mode === 'team' ? 6 : room.mode === 'duo' ? 2 : 1
 
   return (
     <div className="space-y-6">
@@ -112,7 +94,6 @@ export default function RoomLobby() {
       {/* Header */}
       <div>
         <div className="flex flex-wrap items-center gap-1.5 mb-2">
-          <span className={`badge badge-${room.project.difficulty}`}>{room.project.difficulty}</span>
           <span className="badge badge-type">{room.mode}</span>
           <span className="badge badge-status-lobby">{room.status}</span>
         </div>
@@ -128,12 +109,6 @@ export default function RoomLobby() {
             </h3>
             <MemberList members={room.members} mode={room.mode} />
           </div>
-
-          {showCode && (
-            <div className="card p-5">
-              <JoinCodeDisplay joinCode={room.join_code} />
-            </div>
-          )}
 
           {error && <p className="field-error" role="alert">{error}</p>}
 
@@ -153,45 +128,17 @@ export default function RoomLobby() {
           )}
         </div>
 
-        {/* Aside — project info + join by code */}
-        <aside className="lg:w-56 shrink-0 space-y-4">
+        {/* Aside — project info */}
+        <aside className="lg:w-56 shrink-0">
           <div className="card p-5 space-y-3">
             <h3 className="text-sm font-semibold text-slate-700">Project</h3>
             <p className="text-sm font-medium text-slate-800">{room.project.title}</p>
-            <div className="flex flex-wrap gap-1.5">
-              <span className={`badge badge-${room.project.difficulty}`}>{room.project.difficulty}</span>
-              <span className="badge badge-type">{room.project.type}</span>
-            </div>
             <Link
               to={`/projects/${room.project_id}`}
               className="text-xs text-brand-600 hover:text-brand-700 font-medium"
             >
               View project brief →
             </Link>
-          </div>
-
-          <div className="card p-5 space-y-3">
-            <h3 className="text-sm font-semibold text-slate-700">Join another room</h3>
-            <form onSubmit={handleJoinByCode} className="space-y-2">
-              <input
-                className="field-input font-mono tracking-widest uppercase text-sm"
-                type="text"
-                value={codeInput}
-                onChange={e => setCodeInput(e.target.value.toUpperCase())}
-                placeholder="INVITE CODE"
-                maxLength={10}
-                spellCheck={false}
-                autoComplete="off"
-              />
-              {codeError && <p className="field-error">{codeError}</p>}
-              <button
-                type="submit"
-                className="btn-secondary w-full justify-center"
-                disabled={!codeInput.trim() || joining}
-              >
-                {joining ? 'Joining…' : 'Join room'}
-              </button>
-            </form>
           </div>
         </aside>
       </div>

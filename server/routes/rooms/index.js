@@ -1,7 +1,7 @@
 import { authenticate }    from '../../hooks/authenticate.js'
 import { requireMember }   from '../../hooks/requireMember.js'
 import { createRoom }      from './create.js'
-import { joinRoom, joinByCode } from './join.js'
+import { joinRoom } from './join.js'
 import { startRoom }       from './start.js'
 import { getRoomDetail }   from './detail.js'
 import { myRooms }         from './mine.js'
@@ -9,7 +9,6 @@ import { leaveRoom }       from './leave.js'
 import { partnerDecision } from './partnerDecision.js'
 import {
   createBodySchema,
-  joinByCodeBodySchema,
   leaveRoomBodySchema,
   roomParamsSchema,
   fullRoomResponse,
@@ -36,15 +35,6 @@ export default async function roomsRoutes(fastify) {
     ...auth,
     schema: { response: myRoomsResponse }
   }, myRooms)
-
-  // POST /rooms/join-by-code — static, no /:id conflict
-  fastify.post('/join-by-code', {
-    ...auth,
-    schema: {
-      body:     joinByCodeBodySchema,
-      response: fullRoomResponse
-    }
-  }, joinByCode)
 
   // ── Create ────────────────────────────────────────────────────────────────
 

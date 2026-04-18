@@ -3,7 +3,7 @@ export async function myRooms(request, reply) {
 
   const { rows } = await request.server.db.query(
     `SELECT
-       t.id, t.project_id, t.project_title, t.mode, t.status, t.join_code, t.created_at,
+       t.id, t.project_id, t.project_title, t.mode, t.status, t.created_at,
        COUNT(all_members.user_id)::int AS member_count
      FROM teams t
      JOIN team_members my_seat

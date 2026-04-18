@@ -178,7 +178,6 @@ export default function Dashboard() {
                     <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wide px-4 py-3">Project</th>
                     <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wide px-4 py-3">Status</th>
                     <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wide px-4 py-3 hidden sm:table-cell">Mode</th>
-                    <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wide px-4 py-3 hidden md:table-cell">Join code</th>
                     <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wide px-4 py-3 hidden lg:table-cell">Created</th>
                     <th className="px-4 py-3"></th>
                   </tr>
@@ -193,11 +192,6 @@ export default function Dashboard() {
                         <span className={`badge badge-status-${room.status}`}>{room.status}</span>
                       </td>
                       <td className="px-4 py-3 text-slate-500 capitalize hidden sm:table-cell">{room.mode}</td>
-                      <td className="px-4 py-3 hidden md:table-cell">
-                        <code className="text-xs bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded font-mono">
-                          {room.join_code}
-                        </code>
-                      </td>
                       <td className="px-4 py-3 text-slate-400 text-xs hidden lg:table-cell">
                         {new Date(room.created_at).toLocaleDateString()}
                       </td>

@@ -1,6 +1,6 @@
 const ROOM_QUERY = `
   SELECT
-    t.id, t.project_id, t.created_by, t.mode, t.status, t.join_code, t.created_at,
+    t.id, t.project_id, t.created_by, t.mode, t.status, t.created_at,
     json_build_object('title', t.project_title) AS project,
     COALESCE(
       json_agg(

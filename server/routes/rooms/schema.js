@@ -10,14 +10,6 @@ export const createBodySchema = {
   }
 }
 
-export const joinByCodeBodySchema = {
-  type: 'object',
-  required: ['join_code'],
-  additionalProperties: false,
-  properties: {
-    join_code: { type: 'string', minLength: 1, maxLength: 10 }
-  }
-}
 
 export const roomParamsSchema = {
   type: 'object',
@@ -60,7 +52,6 @@ export const fullRoomShape = {
     created_by:       { type: 'integer' },
     mode:             { type: 'string' },
     status:           { type: 'string' },
-    join_code:        { type: 'string' },
     created_at:       { type: 'string' },
     partner_left_at:  { type: ['string', 'null'] },
     seeking_role:     { type: ['string', 'null'] },
@@ -77,7 +68,6 @@ export const myRoomShape = {
     project_title: { type: 'string' },
     mode:          { type: 'string' },
     status:        { type: 'string' },
-    join_code:     { type: 'string' },
     member_count:  { type: 'integer' },
     created_at:    { type: 'string' }
   }
