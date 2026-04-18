@@ -48,6 +48,7 @@ export default function SoloWorkspace() {
     try {
       const response = await api.get(`/projects/${room.project_id}/download`, {
         responseType: 'blob',
+        params: project?.repo ? { repo: project.repo } : {},
       })
       const url = URL.createObjectURL(response.data)
       const a   = document.createElement('a')

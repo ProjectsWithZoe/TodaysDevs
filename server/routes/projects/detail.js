@@ -29,5 +29,6 @@ export async function getProject(request, reply) {
     title:        project.title,
     description:  project.description,
     active_count: rows[0]?.active_count ?? 0,
+    repo:         project.repo,
   })
 }

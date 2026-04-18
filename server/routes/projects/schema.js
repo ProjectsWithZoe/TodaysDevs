@@ -54,6 +54,7 @@ export const detailResponseSchema = {
       title:        { type: 'string' },
       description:  { type: ['string', 'null'] },
       active_count: { type: 'integer' },
+      repo:         { type: 'string' },
     }
   }
 }

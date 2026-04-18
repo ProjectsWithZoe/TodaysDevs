@@ -101,10 +101,10 @@ async function getGithubProjectFromRepo(slug, repo) {
   if (pjRes.ok) {
     const pjData = await pjRes.json()
     const meta = JSON.parse(Buffer.from(pjData.content, 'base64').toString('utf8'))
-    return { slug, title: meta.title ?? slug, description: meta.description ?? null, html_url }
+    return { slug, title: meta.title ?? slug, description: meta.description ?? null, html_url, repo }
   }
 
-  return { slug, title: slug, description: null, html_url }
+  return { slug, title: slug, description: null, html_url, repo }
 }
 
 /**
