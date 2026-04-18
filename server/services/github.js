@@ -1,5 +1,5 @@
 /**
- * GitHub API client for the TodaysDevs/html-css-js repo.
+ * GitHub API client for the TodaysDevs repos.
  * Reads project metadata from project.json files in each folder.
  * Simple TTL cache (5 min) to avoid hammering the API.
  */
@@ -114,6 +114,63 @@ export async function getProjectFileTree(slug) {
   return tree
     .filter(f => f.type === 'blob' && f.path.startsWith(`${slug}/`))
     .map(f => ({ path: f.path.replace(`${slug}/`, ''), sha: f.sha }))
+}
+
+/**
+ * List all project folders from any TodaysDevs repo.
+ * Falls back to the folder name if no project.json is present.
+ */
+export async function listGithubProjectsFromRepo(repo) {
+  const cacheKey = `projects:${repo}:list`
+  const cached = getCached(cacheKey)
+  if (cached) return cached
+
+  const token = process.env.GITHUB_TOKEN
+  if (!token) throw new Error('GITHUB_TOKEN env var is not set')
+
+  const repoBase = `https://api.github.com/repos/${OWNER}/${repo}`
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    Accept:        'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28',
+  }
+
+  const res = await fetch(`${repoBase}/contents`, { headers })
+  if (!res.ok) throw new Error(`GitHub API error: ${res.status}`)
+
+  const items = await res.json()
+  const dirs  = items.filter(i => i.type === 'dir')
+
+  const results = await Promise.allSettled(
+    dirs.map(async dir => {
+      const pjRes = await fetch(`${repoBase}/contents/${dir.name}/project.json`, { headers })
+      if (pjRes.ok) {
+        const pjData = await pjRes.json()
+        const meta = JSON.parse(Buffer.from(pjData.content, 'base64').toString('utf8'))
+        return {
+          slug:        dir.name,
+          title:       meta.title       ?? dir.name,
+          description: meta.description ?? null,
+          html_url:    dir.html_url,
+        }
+      }
+      // No project.json — use folder name as title
+      return { slug: dir.name, title: dir.name, description: null, html_url: dir.html_url }
+    })
+  )
+
+  for (const r of results) {
+    if (r.status === 'rejected') {
+      console.error('[github] Failed to load project from %s/%s:', OWNER, repo, r.reason)
+    }
+  }
+
+  const projects = results
+    .filter(r => r.status === 'fulfilled' && r.value !== null)
+    .map(r => r.value)
+
+  setCached(cacheKey, projects)
+  return projects
 }
 
 /**

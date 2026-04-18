@@ -141,19 +141,14 @@ function PythonProjectsTab() {
     setLoading(true)
     setError(null)
 
-    fetch('https://api.github.com/repos/TodaysDevs/python-projects/contents')
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to load Python projects')
-        return res.json()
-      })
-      .then(data => {
+    api.get('/projects/python')
+      .then(({ data }) => {
         if (cancelled) return
-        // Only show directories (each folder = one project)
-        setProjects(data.filter(item => item.type === 'dir'))
+        setProjects(data.data)
       })
       .catch(err => {
         if (cancelled) return
-        setError(err.message ?? 'Failed to load Python projects')
+        setError(err.response?.data?.message ?? 'Failed to load Python projects')
       })
       .finally(() => { if (!cancelled) setLoading(false) })
 
