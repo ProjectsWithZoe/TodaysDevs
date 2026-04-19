@@ -15,9 +15,26 @@ import healthRoutes from './routes/health/index.js'
 import { errorHandler } from './errorHandler.js'
 
 export async function buildApp(opts = {}) {
-  const fastify = Fastify({
-    logger: opts.logger ?? true
-  })
+  const isProd = process.env.NODE_ENV === 'production'
+
+const fastify = Fastify({
+  logger: opts.logger ?? (
+    isProd
+      ? true
+      : {
+          transport: {
+            target: 'pino-pretty',
+            options: {
+              translateTime: 'yyyy-mm-dd HH:MM:ss',
+              ignore: 'pid,hostname',
+              colorize: true
+            }
+          }
+        }
+  )
+})
+
+  
 
   const allowedOrigins = [
     'http://localhost:5173',
