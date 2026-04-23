@@ -1,5 +1,6 @@
 import { CAPACITY } from '../../lib/constants.js'
 import { fetchRoom } from './detail.js'
+import { posthog }   from '../../lib/posthog.js'
 
 /**
  * Shared membership-addition logic used by both join endpoints.
@@ -50,6 +51,17 @@ export async function joinRoom(request, reply) {
   const err = await addMember(db, team, userId, reply)
   if (err !== null) return
 
+  posthog.capture({
+    distinctId: userId,
+    event: 'room_joined',
+    properties: {
+      room_id:    id,
+      project_id: team.project_id,
+      mode:       team.mode,
+      method:     'direct',
+    },
+  })
+
   return reply.send(await fetchRoom(db, id))
 }
 
@@ -72,6 +84,17 @@ export async function joinByCode(request, reply) {
 
   const err = await addMember(db, team, userId, reply)
   if (err !== null) return
+
+  posthog.capture({
+    distinctId: userId,
+    event: 'room_joined',
+    properties: {
+      room_id:    teamId,
+      project_id: team.project_id,
+      mode:       team.mode,
+      method:     'join_code',
+    },
+  })
 
   return reply.send(await fetchRoom(db, teamId))
 }

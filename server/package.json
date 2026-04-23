@@ -24,6 +24,7 @@
     "mapbox-gl": "^3.21.0",
     "nanoid": "^5",
     "pg": "^8",
+    "posthog-node": "^5.29.5",
     "resend": "^6.11.0"
   }
 }

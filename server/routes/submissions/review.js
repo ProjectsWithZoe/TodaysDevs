@@ -1,4 +1,5 @@
 import { updateScore } from '../../services/scoring.js'
+import { posthog }     from '../../lib/posthog.js'
 
 // Terminal states — no further transitions allowed
 const TERMINAL = new Set(['accepted', 'rejected'])
@@ -50,6 +51,16 @@ export async function reviewSubmission(request, reply) {
       }))
     ).catch(() => {})
   }
+
+  posthog.capture({
+    distinctId: userId,
+    event: 'submission_reviewed',
+    properties: {
+      submission_id: id,
+      team_id:       submission.team_id,
+      status:        newStatus,
+    },
+  })
 
   return reply.send(updated)
 }

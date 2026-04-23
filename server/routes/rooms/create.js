@@ -1,6 +1,7 @@
 import { generateJoinCode }  from '../../lib/joinCode.js'
 import { getGithubProject }  from '../../services/github.js'
 import { fetchRoom }         from './detail.js'
+import { posthog }           from '../../lib/posthog.js'
 
 export async function createRoom(request, reply) {
   const { project_id, repo } = request.body   // GitHub folder slug + optional repo
@@ -48,5 +49,17 @@ export async function createRoom(request, reply) {
   )
 
   const room = await fetchRoom(db, team.id)
+
+  posthog.capture({
+    distinctId: userId,
+    event: 'room_created',
+    properties: {
+      room_id:      team.id,
+      project_id,
+      project_title: project.title,
+      mode:         'solo',
+    },
+  })
+
   return reply.code(201).send(room)
 }

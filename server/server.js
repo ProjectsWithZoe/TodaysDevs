@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import { buildApp } from './app.js'
+import { posthog } from './lib/posthog.js'
 
 const start = async()=>{
   try {
@@ -20,3 +21,12 @@ console.log(`Server running on port ${process.env.PORT}`)
 
 start()
 
+process.on('SIGINT', async () => {
+  await posthog.shutdown()
+  process.exit(0)
+})
+
+process.on('SIGTERM', async () => {
+  await posthog.shutdown()
+  process.exit(0)
+})

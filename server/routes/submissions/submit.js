@@ -1,3 +1,5 @@
+import { posthog } from '../../lib/posthog.js'
+
 const ALLOWED_HOSTS = new Set(['github.com', 'gitlab.com', 'bitbucket.org'])
 
 export async function submitProject(request, reply) {
@@ -78,6 +80,17 @@ export async function submitProject(request, reply) {
   } finally {
     client.release()
   }
+
+  posthog.capture({
+    distinctId: userId,
+    event: 'project_submitted',
+    properties: {
+      submission_id: submission.id,
+      team_id,
+      project_id:   team.project_id,
+      repo_host:    parsedUrl.hostname,
+    },
+  })
 
   return reply.code(201).send(submission)
 }

@@ -1,3 +1,5 @@
+import { posthog } from './lib/posthog.js'
+
 export function errorHandler(error, _request, reply) {
   // JSON Schema validation errors
   if (error.validation) {
@@ -12,6 +14,8 @@ export function errorHandler(error, _request, reply) {
 
   if (statusCode >= 500) {
     reply.log.error(error)
+    const distinctId = _request?.user?.sub ?? 'anonymous'
+    posthog.captureException(error, distinctId)
   }
 
   reply.code(statusCode).send({

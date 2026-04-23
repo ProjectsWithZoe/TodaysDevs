@@ -1,5 +1,6 @@
 import { MIN_TO_START } from '../../lib/constants.js'
 import { fetchRoom }    from './detail.js'
+import { posthog }      from '../../lib/posthog.js'
 
 export async function startRoom(request, reply) {
   const { id } = request.params
@@ -39,6 +40,17 @@ export async function startRoom(request, reply) {
     "UPDATE teams SET status = 'active' WHERE id = $1",
     [id]
   )
+
+  posthog.capture({
+    distinctId: userId,
+    event: 'room_started',
+    properties: {
+      room_id:      id,
+      project_id:   team.project_id,
+      mode:         team.mode,
+      member_count: team.members.length,
+    },
+  })
 
   return reply.send(await fetchRoom(db, id))
 }

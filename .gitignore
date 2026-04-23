@@ -10,3 +10,4 @@
 
 /openspec
 node_modules
+.env

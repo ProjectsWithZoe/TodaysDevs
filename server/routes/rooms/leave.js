@@ -1,4 +1,5 @@
 import { findRoleReplacement } from '../../services/matchmaker.js'
+import { posthog }             from '../../lib/posthog.js'
 
 /**
  * POST /rooms/:id/leave
@@ -70,6 +71,11 @@ export async function leaveRoom(request, reply) {
       )
 
       await client.query('COMMIT')
+      posthog.capture({
+        distinctId: userId,
+        event: 'room_left',
+        properties: { room_id: teamId, project_id: team.project_id, mode: team.mode, result: 'dissolved', requeued: false },
+      })
       return reply.send({ status: 'dissolved', requeued: false })
     }
 
@@ -116,6 +122,11 @@ export async function leaveRoom(request, reply) {
       )
 
       await client.query('COMMIT')
+      posthog.capture({
+        distinctId: userId,
+        event: 'room_left',
+        properties: { room_id: teamId, project_id: team.project_id, mode: team.mode, result: 'partner_left', requeued: shouldRequeue },
+      })
       return reply.send({ status: 'partner_left', requeued: shouldRequeue })
     }
 
@@ -161,6 +172,11 @@ export async function leaveRoom(request, reply) {
 
       // Status stays active
       await client.query('COMMIT')
+      posthog.capture({
+        distinctId: userId,
+        event: 'room_left',
+        properties: { room_id: teamId, project_id: team.project_id, mode: team.mode, result: 'replacement_found', requeued: shouldRequeue },
+      })
       return reply.send({ status: 'active', replacement_found: true, requeued: shouldRequeue })
     }
 
@@ -172,6 +188,11 @@ export async function leaveRoom(request, reply) {
     )
 
     await client.query('COMMIT')
+    posthog.capture({
+      distinctId: userId,
+      event: 'room_left',
+      properties: { room_id: teamId, project_id: team.project_id, mode: team.mode, result: 'seeking_replacement', requeued: shouldRequeue },
+    })
     return reply.send({
       status: 'seeking_replacement',
       seeking_role: leavingRole,

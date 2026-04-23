@@ -3,6 +3,7 @@ import { findDuoMatch, assembleTeam }  from '../../services/matchmaker.js'
 import { generateJoinCode }            from '../../lib/joinCode.js'
 import { CAPACITY }                    from '../../lib/constants.js'
 import { getGithubProject }            from '../../services/github.js'
+import { posthog }                     from '../../lib/posthog.js'
 
 // ── POST /matchmaking/queue ─────────────────────────────────────────────────
 export async function joinQueue(request, reply) {
@@ -95,10 +96,22 @@ export async function joinQueue(request, reply) {
       )
 
       await client.query('COMMIT')
+      for (const uid of matchedUserIds) {
+        posthog.capture({
+          distinctId: uid,
+          event: 'matchmaking_matched',
+          properties: { room_id: room.id, project_id, project_title: project.title, mode, match_size: matchedUserIds.length },
+        })
+      }
       return reply.code(201).send({ status: 'matched', room_id: room.id })
     }
 
     await client.query('COMMIT')
+    posthog.capture({
+      distinctId: userId,
+      event: 'matchmaking_queue_joined',
+      properties: { project_id, project_title: project.title, mode, experience_level: experienceLevel },
+    })
     return reply.code(202).send({ status: 'queued' })
   } catch (err) {
     await client.query('ROLLBACK')
@@ -118,5 +131,10 @@ export async function leaveQueue(request, reply) {
   if (rowCount === 0) {
     return reply.code(404).send({ error: 'Not Found', message: 'Not in queue' })
   }
+  posthog.capture({
+    distinctId: userId,
+    event: 'matchmaking_queue_left',
+    properties: {},
+  })
   return reply.code(204).send()
 }

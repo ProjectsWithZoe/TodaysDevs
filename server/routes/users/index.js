@@ -1,4 +1,5 @@
 import { authenticate } from '../../hooks/authenticate.js'
+import { posthog }      from '../../lib/posthog.js'
 
 const patchRoleSchema = {
   body: {
@@ -117,6 +118,12 @@ export default async function userRoutes(fastify) {
       [display_name.trim(), request.user.sub]
     )
 
+    posthog.capture({
+      distinctId: request.user.sub,
+      event: 'user_display_name_updated',
+      properties: {},
+    })
+
     return reply.send(rows[0])
   })
 
@@ -139,6 +146,12 @@ export default async function userRoutes(fastify) {
       'UPDATE users SET role_id = $1 WHERE id = $2',
       [rows[0].id, request.user.sub]
     )
+
+    posthog.capture({
+      distinctId: request.user.sub,
+      event: 'user_role_updated',
+      properties: { role },
+    })
 
     return reply.send({ role })
   })
