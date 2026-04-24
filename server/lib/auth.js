@@ -28,6 +28,7 @@ export const auth = betterAuth({
 
   emailVerification: {
     sendOnSignUp: true,
+    callbackURL: process.env.CLIENT_ORIGIN ?? 'http://localhost:5173',
     sendVerificationEmail: async ({ user, url }) => {
       try {
         await sendEmail(
