@@ -28,7 +28,7 @@ export default function EmailVerificationBanner({ user }) {
     try {
       const { error: resendError } = await authClient.sendVerificationEmail({
         email: user.email,
-        callbackURL: '/dashboard',
+        callbackURL: `${window.location.origin}/dashboard`,
       })
       if (resendError) {
         throw resendError

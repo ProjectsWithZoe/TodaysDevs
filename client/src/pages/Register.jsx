@@ -20,7 +20,7 @@ export default function Register() {
     setError('')
 
     const name = email.split('@')[0]
-    const { error: signUpErr } = await authClient.signUp.email({ email, password, name })
+    const { error: signUpErr } = await authClient.signUp.email({ email, password, name, callbackURL: `${window.location.origin}/dashboard` })
 
     if (signUpErr) {
       setError(signUpErr.message ?? 'Registration failed')
