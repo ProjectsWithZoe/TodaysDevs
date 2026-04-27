@@ -15,6 +15,7 @@
     "@fastify/cors": "^9",
     "@fastify/jwt": "^8",
     "@fastify/rate-limit": "^9",
+    "@sanity/client": "^7.22.0",
     "bcrypt": "^5",
     "better-auth": "^1.6.2",
     "dotenv": "^16",

@@ -133,6 +133,12 @@ export default function Landing() {
           </div>
           <div className="flex items-center gap-3">
             <Link
+              to="/blog"
+              className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+            >
+              Blog
+            </Link>
+            <Link
               to="/login"
               className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
             >

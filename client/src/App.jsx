@@ -26,6 +26,8 @@ import NotFound       from './pages/NotFound.jsx'
 const ProjectBrowser = lazy(() => import('./pages/ProjectBrowser.jsx'))
 const Leaderboard    = lazy(() => import('./pages/Leaderboard.jsx'))
 const CodingFriends  = lazy(() => import('./pages/CodingFriends.jsx'))
+const Blog           = lazy(() => import('./pages/Blog.jsx'))
+const BlogPost       = lazy(() => import('./pages/BlogPost.jsx'))
 
 function Lazy({ children }) {
   return <Suspense fallback={<PageSkeleton />}>{children}</Suspense>
@@ -33,7 +35,9 @@ function Lazy({ children }) {
 
 export const router = createBrowserRouter([
   // ── Public routes ──────────────────────────────────────────────
-  { path: '/', element: <Landing /> },
+  { path: '/',           element: <Landing /> },
+  { path: '/blog',       element: <Lazy><Blog /></Lazy> },
+  { path: '/blog/:slug', element: <Lazy><BlogPost /></Lazy> },
 
   {
     element: <AuthLayout />,
