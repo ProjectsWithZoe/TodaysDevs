@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react'
 import { Link }                from 'react-router-dom'
+import { Helmet }              from 'react-helmet-async'
 import { sanity }              from '../lib/sanity.js'
 import { postsQuery }          from '../lib/sanityQueries.js'
+
+const SITE_URL = import.meta.env.VITE_SITE_URL ?? 'https://todaysdevs.com'
 
 function PublicNav() {
   return (
@@ -73,11 +76,6 @@ export default function Blog() {
   const [error,   setError]   = useState(null)
 
   useEffect(() => {
-    document.title = 'Blog — TodaysDevs'
-    return () => { document.title = 'TodaysDevs' }
-  }, [])
-
-  useEffect(() => {
     sanity.fetch(postsQuery)
       .then(setPosts)
       .catch(() => setError('Failed to load posts'))
@@ -86,6 +84,15 @@ export default function Blog() {
 
   return (
     <div style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }} className="bg-white text-slate-900 antialiased min-h-screen">
+      <Helmet>
+        <title>Blog — TodaysDevs</title>
+        <meta name="description" content="Tips, tutorials, and insights for developers at every level. Read the TodaysDevs blog." />
+        <link rel="canonical" href={`${SITE_URL}/blog`} />
+        <meta property="og:title" content="Blog — TodaysDevs" />
+        <meta property="og:description" content="Tips, tutorials, and insights for developers at every level." />
+        <meta property="og:url" content={`${SITE_URL}/blog`} />
+        <meta property="og:type" content="website" />
+      </Helmet>
       <PublicNav />
 
       <main className="max-w-6xl mx-auto px-6 pt-28 pb-24">

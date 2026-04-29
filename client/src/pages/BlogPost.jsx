@@ -1,8 +1,11 @@
 import { useState, useEffect }  from 'react'
 import { useParams, Link }       from 'react-router-dom'
 import { PortableText }          from '@portabletext/react'
+import { Helmet }                from 'react-helmet-async'
 import { sanity }                from '../lib/sanity.js'
 import { postBySlugQuery }       from '../lib/sanityQueries.js'
+
+const SITE_URL = import.meta.env.VITE_SITE_URL ?? 'https://todaysdevs.com'
 
 function PublicNav() {
   return (
@@ -61,11 +64,6 @@ export default function BlogPost() {
   const [error,   setError]   = useState(null)
 
   useEffect(() => {
-    if (post) document.title = `${post.title} — TodaysDevs`
-    return () => { document.title = 'TodaysDevs' }
-  }, [post])
-
-  useEffect(() => {
     setLoading(true)
     sanity.fetch(postBySlugQuery, { slug })
       .then(data => {
@@ -78,6 +76,32 @@ export default function BlogPost() {
 
   return (
     <div style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }} className="bg-white text-slate-900 antialiased min-h-screen">
+      {post ? (
+        <Helmet>
+          <title>{post.title} — TodaysDevs</title>
+          <meta name="description" content={post.excerpt ?? `Read ${post.title} on TodaysDevs`} />
+          <link rel="canonical" href={`${SITE_URL}/blog/${post.slug}`} />
+          <meta property="og:title" content={`${post.title} — TodaysDevs`} />
+          <meta property="og:description" content={post.excerpt ?? ''} />
+          <meta property="og:url" content={`${SITE_URL}/blog/${post.slug}`} />
+          <meta property="og:type" content="article" />
+          <meta property="article:published_time" content={post.publishedAt} />
+          <script type="application/ld+json">{JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BlogPosting',
+            headline: post.title,
+            description: post.excerpt ?? '',
+            author: { '@type': 'Person', name: post.author ?? 'TodaysDevs' },
+            datePublished: post.publishedAt,
+            publisher: { '@type': 'Organization', name: 'TodaysDevs', url: SITE_URL },
+            url: `${SITE_URL}/blog/${post.slug}`,
+          })}</script>
+        </Helmet>
+      ) : (
+        <Helmet>
+          <title>Blog — TodaysDevs</title>
+        </Helmet>
+      )}
       <PublicNav />
 
       <main className="max-w-6xl mx-auto px-6 pt-28 pb-24">

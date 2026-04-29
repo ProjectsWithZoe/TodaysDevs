@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /projects
+Disallow: /rooms
+Disallow: /leaderboard
+Disallow: /friends
+Disallow: /role-select
+
+Sitemap: https://todaysdevs.com/sitemap.xml
