@@ -1,10 +1,13 @@
 import { Link }           from 'react-router-dom'
+import { Helmet }         from 'react-helmet-async'
 import { useTitleEffect } from '../hooks/useTitleEffect.js'
 
 export default function NotFound() {
   useTitleEffect('Page Not Found')
 
   return (
+    <>
+    <Helmet><meta name="robots" content="noindex, nofollow" /></Helmet>
     <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4 gap-4">
       <span className="text-7xl font-black text-slate-200 select-none">404</span>
       <div className="space-y-1">
@@ -17,5 +20,6 @@ export default function NotFound() {
         Go to Dashboard
       </Link>
     </div>
+    </>
   )
 }

@@ -125,7 +125,17 @@ export default function BlogPost() {
           </div>
         )}
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        {error && (
+          <div className="max-w-2xl py-16 text-center">
+            <p className="text-slate-500 mb-6">{error}</p>
+            <Link to="/blog" className="inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600 hover:underline">
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+              Back to blog
+            </Link>
+          </div>
+        )}
 
         {post && (
           <div className="max-w-2xl">
