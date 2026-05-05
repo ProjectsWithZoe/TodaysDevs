@@ -86,7 +86,7 @@ export default function Sidebar() {
           </NavLink>
         ))}
 
-        <a
+        {/*<a
           href="https://discord.gg/zJ6tEqVg"
           target="_blank"
           rel="noopener noreferrer"
@@ -96,7 +96,7 @@ export default function Sidebar() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M8 10.5h.01M16 10.5h.01M7 17c1.5 1 3.166 1.5 5 1.5S15.5 18 17 17m2-9.5A14.938 14.938 0 0012 6c-2.452 0-4.77.586-6.82 1.625A14.96 14.96 0 004 12c0 2.208.478 4.304 1.335 6.188A14.932 14.932 0 0012 19.5c2.375 0 4.622-.55 6.615-1.53A14.91 14.91 0 0020 12c0-1.573-.242-3.09-.69-4.5z" />
           </svg>
           Discord
-        </a>
+        </a>*/}
       </nav>
 
       {/* User strip */}
