@@ -4,6 +4,20 @@ import { PageSkeleton } from '../components/PageSkeleton.jsx'
 
 // ── Data ────────────────────────────────────────────────────────────────────
 
+import * as Sentry from '@sentry/react';
+// Add this button component to your app to test Sentry's error tracking
+function ErrorButton() {
+  return (
+    <button
+      onClick={() => {
+        throw new Error('This is your first error!');
+      }}
+    >
+      Break the world
+    </button>
+  );
+}
+
 const STATS = [
   {
     value: '25%',
@@ -346,6 +360,8 @@ export default function Landing() {
           <p className="text-xs text-slate-600">© {new Date().getFullYear()} TodaysDevs. All rights reserved.</p>
         </div>
       </footer>
+
+      <ErrorButton/>
 
     </div>
   )

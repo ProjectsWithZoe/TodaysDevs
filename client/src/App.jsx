@@ -30,6 +30,21 @@ const CodingFriends  = lazy(() => import('./pages/CodingFriends.jsx'))
 const Blog           = lazy(() => import('./pages/Blog.jsx'))
 const BlogPost       = lazy(() => import('./pages/BlogPost.jsx'))
 
+import * as Sentry from '@sentry/react';
+// Add this button component to your app to test Sentry's error tracking
+function ErrorButton() {
+  return (
+    <button
+      onClick={() => {
+        throw new Error('This is your first error!');
+      }}
+    >
+      Break the world
+    </button>
+  );
+}
+
+
 function Lazy({ children }) {
   return <Suspense fallback={<PageSkeleton />}>{children}</Suspense>
 }
@@ -75,6 +90,7 @@ export default function App() {
   return (
     <HelmetProvider>
       <RouterProvider router={router} />
+      <ErrorButton/>
     </HelmetProvider>
   )
 }
