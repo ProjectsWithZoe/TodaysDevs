@@ -10,8 +10,5 @@
     "dev:client": "npm run dev --workspace=client",
     "migrate": "npm run migrate --workspace=server",
     "seed": "npm run seed --workspace=server"
-  },
-  "dependencies": {
-    "@sentry/react": "^10.52.0"
   }
 }
