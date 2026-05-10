@@ -13,13 +13,4 @@ export default defineConfig({
       },
     }
   },
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          sentry: ['@sentry/react', '@sentry/tracing']
-        }
-      }
-    }
-  }
 })
