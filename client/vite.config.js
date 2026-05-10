@@ -7,10 +7,19 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3001',
+        target: 'https://api.todaysdevs.com',
         changeOrigin: true,
         rewrite: path => path.replace(/^\/api/, '')
       },
+    }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          sentry: ['@sentry/react', '@sentry/tracing']
+        }
+      }
     }
   }
 })
